@@ -1,0 +1,73 @@
+[project]
+name = "Machado-target-azureblobstorage"
+version = "0.0.1"
+description = "Singer target for target-azureblobstorage, built with the Meltano Singer SDK."
+readme = "README.md"
+authors = [{ name = "Rui Machado", email = "firstname.lastname@example.com" }]
+keywords = [
+    "ELT",
+    "target-azureblobstorage",
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+license = "Apache-2.0"
+license-files = [ "LICENSE" ]
+requires-python = ">=3.9"
+dependencies = [
+    "singer-sdk~=0.46.4",
+    "requests~=2.32.3",
+    "pandas>=2.3.0",
+    "azure-storage-blob>=12.25.1",
+    "azure-identity>=1.23.0",
+]
+
+[project.optional-dependencies]
+s3 = [
+    "s3fs~=2025.5.0",
+]
+
+[project.scripts]
+# CLI declaration
+target-azureblobstorage = 'target_azureblobstorage.target:TargetAzureBlobStorage.cli'
+
+[dependency-groups]
+dev = [
+    { include-group = "test" },
+]
+test = [
+    "pytest>=8",
+    "singer-sdk[testing]",
+]
+[tool.hatch.build.targets.wheel]
+packages = [
+    "target_azureblobstorage",
+]
+
+[tool.mypy]
+warn_unused_configs = true
+
+[tool.ruff.lint]
+ignore = [
+    "COM812",  # missing-trailing-comma
+]
+select = ["ALL"]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[build-system]
+requires = [
+    "hatchling>=1,<2",
+]
+build-backend = "hatchling.build"
