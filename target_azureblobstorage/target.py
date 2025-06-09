@@ -26,17 +26,17 @@ class TargetAzureBlobStorage(Target):
         ),
         th.Property(
             "filename_pattern",
-            th.StringType(nullable=True, default="{stream}_{datetime}"),
+            th.StringType(nullable=True),
             required=False,
             title="Destination file naming pattern",
             description="The naming pattern for the destination files in Azure Blob Storage. Defaults to '{stream}_{datetime}.csv. Possible substitutions: {stream},{date},{datetime}.'",
         ),
         th.Property(
-            "container_name",
-            th.StringType(nullable=True, default="landing"),
-            required=False,
+            "azure_storage_account_container_name",
+            th.StringType(nullable=False),
+            required=True,
             title="Azure Blob Storage Container Name",
-            description="The name of the Azure Blob Storage container where data will be stored. Defaults to 'landing'.",
+            description="The name of the Azure Blob Storage container where data will be stored. The container must already exist in the target storage account.",
         )
     ).to_dict()
 

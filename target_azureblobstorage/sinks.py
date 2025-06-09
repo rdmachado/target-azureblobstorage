@@ -21,9 +21,9 @@ class TargetAzureBlobStorageSink(BatchSink):
 
         start_dt = datetime.now()
 
-        self.connection_string = self.config.get("azure_storage_account_connection_string", None)
-        self.container_name = self.config.get("container_name")
-        self.filename_pattern = self.config.get("filename_pattern")
+        self.connection_string = self.config.get("azure_storage_account_connection_string")
+        self.container_name = self.config.get("azure_storage_account_container_name")
+        self.filename_pattern = self.config.get("filename_pattern", "{stream}_{datetime}")
         self.filename = self.render_filename(self.filename_pattern, self.stream_name, start_dt) + '.csv'
         self.incomplete_filename = self.render_filename(f"{self.filename_pattern}__incomplete__", self.stream_name, start_dt) + '.csv'
 
