@@ -22,8 +22,8 @@ class TargetAzureBlobStorageSink(BatchSink):
         start_dt = datetime.now()
 
         self.connection_string = self.config.get("azure_storage_account_connection_string", None)
-        self.container_name = self.config.get("container_name", "landing")
-        self.filename_pattern = self.config.get("filename_pattern", "{stream}_{datetime}")
+        self.container_name = self.config.get("container_name")
+        self.filename_pattern = self.config.get("filename_pattern")
         self.filename = self.render_filename(self.filename_pattern, self.stream_name, start_dt) + '.csv'
         self.incomplete_filename = self.render_filename(f"{self.filename_pattern}__incomplete__", self.stream_name, start_dt) + '.csv'
 
@@ -35,41 +35,15 @@ class TargetAzureBlobStorageSink(BatchSink):
 
     def clean_up(self) -> None:
 
-        final_blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=self.filename)
-        final_blob_client.start_copy_from_url(self.blob_client.url)
+        if self.blob_client.exists():
+            # Wrap up with the correct name (no rename operation?)
+            final_blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=self.filename)
+            final_blob_client.start_copy_from_url(self.blob_client.url)
 
-        self.blob_client.delete_blob()
+            self.blob_client.delete_blob()
 
         return super().clean_up()
 
-    # def start_batch(self, context: dict) -> None:
-    #     """Start a batch.
-
-    #     Developers may optionally add additional markers to the `context` dict,
-    #     which is unique to this batch.
-
-    #     Args:
-    #         context: Stream partition or context dictionary.
-    #     """
-    #     # Sample:
-    #     # ------
-    #     # batch_key = context["batch_id"]
-    #     # context["file_path"] = f"{batch_key}.csv"
-
-    # def process_record(self, record: dict, context: dict) -> None:
-    #     """Process the record.
-
-    #     Developers may optionally read or write additional markers within the
-    #     passed `context` dict from the current batch.
-
-    #     Args:
-    #         record: Individual record in the stream.
-    #         context: Stream partition or context dictionary.
-    #     """
-    #     # Sample:
-    #     # ------
-    #     # with open(context["file_path"], "a") as csvfile:
-    #     #     csvfile.write(record)
 
     def process_batch(self, context: dict) -> None:
         """Write out any prepped records and return once fully written.
@@ -89,10 +63,6 @@ class TargetAzureBlobStorageSink(BatchSink):
 
         self.blob_client.append_block(csv_bytes)
         
-        # Sample:
-        # ------
-        # client.upload(context["file_path"])  # Upload file
-        # Path(context["file_path"]).unlink()  # Delete local copy
 
     def render_filename(self, filename_pattern, stream_name: str, datetime: datetime = datetime.now()) -> str:
         """Render the filename for the current batch.
