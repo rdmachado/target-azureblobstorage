@@ -14,9 +14,6 @@ class TargetAzureBlobStorageSink(BatchSink):
 
     max_size = 100000  # Max records to write in one batch
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def setup(self) -> None:
 
         start_dt = datetime.now()
